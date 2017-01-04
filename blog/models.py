@@ -10,6 +10,6 @@ class Article(models.Model):
     article_content = models.TextField()
     date_published = models.DateTimeField('date published')
     def __str__(self):
-        return self.article_content
+        return self.article_title_text
     def was_published_recently(self):
         return self.date_published >= timezone.now() - datetime.timedelta(days=1)
