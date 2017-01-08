@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
+from django.utils import timezone
 
 from .models import Article
 
@@ -11,12 +12,23 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_article_list'
 
     def get_queryset(self):
-        """Return the last five published questions."""
-        return Article.objects.order_by('-date_published')[:5]
+        """
+        Return the last five published articles (not including those set to be
+        published in the future).
+        """
+        return Article.objects.filter(
+            date_published__lte=timezone.now()
+        ).order_by('-date_published')[:5]
 
 class DetailView(generic.DetailView):
     model = Article
     template_name = 'blog/detail.html'
+
+    def get_queryset(self):
+        """
+        Excludes any articles that aren't published yet.
+        """
+        return Article.objects.filter(date_published__lte=timezone.now())
 
 def like(request, article_id):
     article = get_object_or_404(Article, pk=article_id)
