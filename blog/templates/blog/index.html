@@ -1,5 +1,5 @@
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}" />
+{% extends 'main/base.html' %}
+{% block content %}
 
 {% if latest_article_list %}
     <ul>
@@ -10,3 +10,5 @@
 {% else %}
     <p>No articles are available.</p>
 {% endif %}
+
+{% endblock %}

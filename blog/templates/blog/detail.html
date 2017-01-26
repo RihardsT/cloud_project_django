@@ -1,3 +1,6 @@
+{% extends 'main/base.html' %}
+{% block content %}
+
 <h1>{{ article.article_title_text }}</h1>
 <ul>
     <li>{{ article.article_content }}</li>
@@ -12,5 +15,7 @@
 {% csrf_token %}
 <input type="radio" name="article" id="article{{ article.id }}" value="{{ article.id }}" />
 <label for="article{{ article.id }}">{{ article.article_content }}</label><br />
-<input type="submit" value="Like" />
+<input type="submit" value="Like" class="small ui button"/>
 </form>
+
+{% endblock %}
