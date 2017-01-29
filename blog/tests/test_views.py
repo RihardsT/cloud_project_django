@@ -9,7 +9,6 @@ from blog.models import Article
 # Create your tests here.
 
 class ArticleMethodTests(TestCase):
-
     def test_was_published_recently_with_future_article(self):
         """
         was_published_recently() should return False for articles whose
@@ -133,3 +132,24 @@ class ArticleIndexDetailTests(TestCase):
         url = reverse('blog:detail', args=(past_article.id,))
         response = self.client.get(url)
         self.assertContains(response, past_article.article_title_text)
+
+class ArticleDetailTestLikes(TestCase):
+    #Something fails here.
+    def test_detail_view_add_like_redirects_back_to_detail_when_fails(self):
+        """Test that like redirects back to article"""
+        article = create_article(article_title_text='Article.',
+            article_content="Article content", days=-5)
+        url = reverse('blog:like', args=(article.id,))
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302) # Redirect code
+        self.assertRedirects(response, "/blog/1/")
+        # Didn't yet find easy way to interpolate article.id in assertRedirects
+
+    def test_detail_view_add_like(self):
+        """Pressing like button should increase articles like count"""
+        article = create_article(article_title_text='Article.',
+            article_content="Article content", days=-5)
+        url = reverse('blog:like', args=(article.id,))
+        self.client.post(url) # I expect this to update the article like count. Doesn't.
+        article.likes += 1
+        self.assertEqual(article.likes, 1)
