@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.urls import reverse
 import datetime
 
-from .models import Article
+from blog.models import Article
 
 
 # Create your tests here.
