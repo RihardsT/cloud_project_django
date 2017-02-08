@@ -5,4 +5,11 @@
   Main index page
 </p>
 
+<h2>{{ latest_article.article_title_text }}</h2>
+<ul>
+    <li>{{ latest_article.article_content }}</li>
+</ul>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
 {% endblock %}
