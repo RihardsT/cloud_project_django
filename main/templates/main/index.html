@@ -5,4 +5,14 @@
   Main index page
 </p>
 
+<h3>
+  <a href="{% url 'blog:detail' latest_article.id %}">{{ latest_article.article_title_text }}</a>
+</h3>
+
+<ul>
+    <li>{{ latest_article.article_content }}</li>
+</ul>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
 {% endblock %}

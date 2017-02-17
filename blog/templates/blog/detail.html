@@ -4,10 +4,8 @@
 <h1>{{ article.article_title_text }}</h1>
 <ul>
     <li>{{ article.article_content }}</li>
-    <li>{{ article.likes }}</li>
+    <li>Likes: {{ article.likes }}</li>
 </ul>
-
-<h1>{{ article.article_title_text }}</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
