@@ -1,2 +1,4 @@
 django<2
 coverage
+psycopg2
+gunicorn
