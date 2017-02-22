@@ -5,6 +5,7 @@
   Main index page
 </p>
 
+{% if latest_article.id %}
 <h3>
   <a href="{% url 'blog:detail' latest_article.id %}">{{ latest_article.article_title_text }}</a>
 </h3>
@@ -12,6 +13,7 @@
 <ul>
     <li>{{ latest_article.article_content }}</li>
 </ul>
+{% endif %}
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 

@@ -134,7 +134,6 @@ class ArticleIndexDetailTests(TestCase):
         self.assertContains(response, past_article.article_title_text)
 
 class ArticleDetailTestLikes(TestCase):
-    #Something fails here.
     def test_detail_view_add_like_redirects_back_to_detail_when_fails(self):
         """Test that like redirects back to article"""
         article = create_article(article_title_text='Article.',
@@ -142,8 +141,8 @@ class ArticleDetailTestLikes(TestCase):
         url = reverse('blog:like', args=(article.id,))
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302) # Redirect code
-        self.assertRedirects(response, "/blog/1/")
-        # Didn't yet find easy way to interpolate article.id in assertRedirects
+        self.assertRedirects(response, f'/blog/{article.id}/')
+        # Literal String Interpolation. f'{var}'
 
     def test_detail_view_add_like(self):
         """Pressing like button should increase articles like count"""
