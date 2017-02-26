@@ -18,6 +18,9 @@
   </div>
 
   <div class="body-content">
+    <p>
+      Current: {{ request.get_full_path }}
+    </p>
     {% block content %}{% endblock %}
   </div>
 
