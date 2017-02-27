@@ -1,10 +1,6 @@
 {% extends 'main/base.html' %}
 {% block content %}
 
-<p>
-  Main index page
-</p>
-
 {% if latest_article.id %}
 <h3>
   <a href="{% url 'blog:detail' latest_article.id %}">{{ latest_article.article_title_text }}</a>
