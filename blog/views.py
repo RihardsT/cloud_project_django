@@ -5,12 +5,16 @@ from django.views import generic
 from django.utils import timezone
 
 from .models import Article
+from main.models import Welcome
 
 # Create your views here.
 class IndexView(generic.ListView):
     template_name = 'blog/index.html'
     context_object_name = 'latest_article_list'
-
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['page_description'] = Welcome.objects.filter(display_on_page="blog").first()
+        return context
     def get_queryset(self):
         """
         Return the last five published articles (not including those set to be
