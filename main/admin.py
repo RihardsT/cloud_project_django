@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Welcome
+from .models import PageDescription
 
-class WelcomeAdmin(admin.ModelAdmin):
+class PageDescriptionAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(Welcome, WelcomeAdmin)
+admin.site.register(PageDescription, PageDescriptionAdmin)

@@ -5,7 +5,7 @@ from django.views import generic
 from django.utils import timezone
 
 from .models import Article
-from main.models import Welcome
+from main.models import PageDescription
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -13,7 +13,9 @@ class IndexView(generic.ListView):
     context_object_name = 'latest_article_list'
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['page_description'] = Welcome.objects.filter(display_on_page="blog").first()
+        page_description = PageDescription.objects.filter(display_on_page="blog").first()
+        if page_description is not None:
+            context['page_description'] = page_description
         return context
     def get_queryset(self):
         """

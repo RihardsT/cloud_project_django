@@ -14,10 +14,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Welcome',
+            name='PageDescription',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('welcome_text', models.TextField()),
+                ('page_description', models.TextField()),
                 ('display_on_page', models.CharField(max_length=200)),
             ],
         ),
