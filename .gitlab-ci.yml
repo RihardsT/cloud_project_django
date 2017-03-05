@@ -3,10 +3,15 @@ image: python:3.6-alpine
 services:
   - postgres:alpine
 
+variables:
+  POSTGRES_DB: postgres
+
 before_script:
   - apk add --no-cache postgresql-dev musl-dev gcc
   - pip install -r requirements.txt
 
 test:
+  variables:
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
   - python manage.py test
