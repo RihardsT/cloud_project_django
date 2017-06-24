@@ -7,14 +7,15 @@
   <title>Blog App</title>
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.css">
-  <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.6/semantic.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">
+  <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
 </head>
 
 <body class="ui container">
   <div class="ui menu ">
     <a href="{% url 'index' %}" class="item">Sākums</a>
     <a href="{% url 'blog:index' %}" class="item">Neregulāri raksti</a>
+    <a href="http://dok.rudenspavasaris.id.lv/" class="item right">Dokumentācija</a>
   </div>
 
   <div class="body-content">
