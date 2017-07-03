@@ -27,12 +27,33 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['web']
 
+# Vault
+from vault12factor import VaultCredentialProvider, VaultAuth12Factor, DjangoAutoRefreshDBCredentialsDict
+if DEBUG and not VaultAuth12Factor.has_envconfig():
+    SECRET_KEY = "secretsekrit"  # FOR DEBUG ONLY!
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'authserver.sqlite3',
+        }
+    }
+else:
+    if DEBUG:
+        SECRET_KEY = "secretsekrit"  # FOR DEBUG ONLY!
+
+    VAULT = VaultAuth12Factor.fromenv()
+    CREDS = VaultCredentialProvider("https://vault.local:8200/", VAULT,
+                                    os.getenv("VAULT_DATABASE_PATH",
+                                    "db-mydatabase/creds/fullaccess"),
+                                    os.getenv("VAULT_CA", None), True,
+                                    DEBUG)
 
 # Application definition
-
 INSTALLED_APPS = [
     'main.apps.MainConfig',
     'blog.apps.BlogConfig',
+    'vault12factor',
+    'postgresql_setrole',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,15 +96,29 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'HOST': 'postgres',
+#         'PORT': 5432,
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'postgres',
-        'PORT': 5432,
+        'default': DjangoAutoRefreshDBCredentialsDict(CREDS, {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv("DATABASE_NAME", "django"),
+            'USER': CREDS.username,
+            'PASSWORD': CREDS.password,
+            'HOST': 'postgres', # docker container hostname
+            'PORT': '5432',
+            # requires django-postgresql-setrole
+            'SET_ROLE': os.getenv("DATABASE_OWNERROLE", "django_owner")
+        }),
     }
-}
+
 
 
 # Password validation
