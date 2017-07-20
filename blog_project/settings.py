@@ -20,33 +20,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '%&2!qgt+4=xlva%r+*m123g!cav%jham+5u$b_@p3!+)f!msv4'
+# Taken from https://gist.github.com/ndarville/3452907
+try:
+    SECRET_KEY
+except NameError:
+    SECRET_FILE = os.path.join('./', 'secret.txt')
+    try:
+        SECRET_KEY = open(SECRET_FILE).read().strip()
+    except IOError:
+        try:
+            import random
+            SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+            secret = open(SECRET_FILE, 'w')
+            secret.write(SECRET_KEY)
+            secret.close()
+        except IOError:
+            Exception('Please create a %s file with random characters \
+            to generate your secret key!' % SECRET_FILE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['web']
-
-# Vault
-from vault12factor import VaultCredentialProvider, VaultAuth12Factor, DjangoAutoRefreshDBCredentialsDict
-if DEBUG and not VaultAuth12Factor.has_envconfig():
-    SECRET_KEY = "secretsekrit"  # FOR DEBUG ONLY!
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'authserver.sqlite3',
-        }
-    }
-else:
-    if DEBUG:
-        SECRET_KEY = "secretsekrit"  # FOR DEBUG ONLY!
-
-    VAULT = VaultAuth12Factor.fromenv()
-    CREDS = VaultCredentialProvider("https://vault.local:8200/", VAULT,
-                                    os.getenv("VAULT_DATABASE_PATH",
-                                    "db-mydatabase/creds/fullaccess"),
-                                    os.getenv("VAULT_CA", None), True,
-                                    DEBUG)
 
 # Application definition
 INSTALLED_APPS = [
@@ -95,29 +90,37 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'HOST': 'postgres',
-#         'PORT': 5432,
-#     }
-# }
-
-DATABASES = {
-        'default': DjangoAutoRefreshDBCredentialsDict(CREDS, {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv("DATABASE_NAME", "django"),
-            'USER': CREDS.username,
-            'PASSWORD': CREDS.password,
-            'HOST': 'postgres', # docker container hostname
-            'PORT': '5432',
-            # requires django-postgresql-setrole
-            'SET_ROLE': os.getenv("DATABASE_OWNERROLE", "django_owner")
-        }),
+# DB credentials from Vault
+from vault12factor import VaultCredentialProvider, VaultAuth12Factor, DjangoAutoRefreshDBCredentialsDict, monkeypatch_django
+if DEBUG and not VaultAuth12Factor.has_envconfig():
+    SECRET_KEY = "SECRET_KEY_FOR_DEBUG_GOES_HERE"  # FOR DEBUG ONLY!
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'authserver.sqlite3',
+        }
     }
+else:
+    if DEBUG:
+        SECRET_KEY = "SECRET_KEY_FOR_DEBUG_GOES_HERE"  # FOR DEBUG ONLY!
+    VAULT = VaultAuth12Factor.fromenv()
+    CREDS = VaultCredentialProvider("http://vault:8200/", VAULT,
+                                    os.getenv("VAULT_DATABASE_PATH", "django-auth/creds/fullaccess"),
+                                    os.getenv("VAULT_CA", None), False, #The ssl_verify: false
+                                    DEBUG)
+    DATABASES = {
+            'default': DjangoAutoRefreshDBCredentialsDict(CREDS, {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.getenv("DATABASE_NAME", "django"),
+                'USER': CREDS.username,
+                'PASSWORD': CREDS.password,
+                'HOST': 'postgres', # docker container hostname
+                'PORT': '5432',
+                # requires django-postgresql-setrole
+                'SET_ROLE': os.getenv("DATABASE_OWNERROLE", "django_owner")
+            }),
+            }
+
 
 
 

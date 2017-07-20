@@ -3,3 +3,4 @@ coverage
 psycopg2
 gunicorn
 12factor-vault
+django-postgresql-setrole
