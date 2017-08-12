@@ -24,7 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 try:
     SECRET_KEY
 except NameError:
-    SECRET_FILE = os.path.join('./', 'secret.txt')
+    # TODO: Remove this hardcoded secret path. Better yet, move this to Hashicorp Vault
+    SECRET_FILE = os.path.join('/var/docker/django/', 'secret.txt')
     try:
         SECRET_KEY = open(SECRET_FILE).read().strip()
     except IOError:
